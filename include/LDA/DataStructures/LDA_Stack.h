@@ -25,8 +25,8 @@ typedef enum
     LDA_OnStackCreatedFailed,
     LDA_OnStackPushFailed,
     LDA_OnStackPopFailed,
-    LDA_OnNodeCleanedFailed,
-    LDA_OnStackCleanedFailed,
+    LDA_OnNodeClearedFailed,
+    LDA_OnStackClearedFailed,
 }LDA_StackCode;
 /*
     @brief Stack node type, this structure holds the main data/information.
@@ -123,29 +123,30 @@ bool LDA_StackIsEmpty(LDA_Stack *stack);
     @brief Clear the stack
 
     @param stack LDA_Stack * type. The stack to be cleaned.
-    @param OnNodeCleaned Callback function. This function is called before freeing the memory for the node.
-    @param OnStackCleaned Callback function. This function is called once the stack is empty again.
+    @param OnNodeCleared Callback function. This function is called before freeing the memory for the node.
+    @param OnStackCleared Callback function. This function is called once the stack is empty again.
 
     @retval LDA_StackSuccess if all went as planned.
     @retval LDA_StackIsNull if the stack parameter is NULL.
-    @retval LDA_OnNodeCleanedFailed if the OnNodeCleaned callback function returned false. User defined behavior.
-    @retval LDA_OnStackCleanedFailed if the OnStackCleaned callback function returned false. User defined behavior.
+    @retval LDA_StackPop. This function calls LDA_StackPop to pop each element, if the function isn't returning LDA_StackSuccess then LDA_StackClear will return the value that LDA_StackPop returned.
+    @retval LDA_OnNodeClearedFailed if the OnNodeCleared callback function returned false. User defined behavior.
+    @retval LDA_OnStackClearedFailed if the OnStackCleared callback function returned false. User defined behavior.
 
     This function removes all the stack nodes but the stack head remains
 */
-LDA_StackCode LDA_StackClear(LDA_Stack *stack, bool (*OnNodeCleaned)(LDA_StackNode *node), bool (OnStackCleaned)(LDA_Stack *stack));
+LDA_StackCode LDA_StackClear(LDA_Stack *stack, bool (*OnNodeCleared)(LDA_StackNode *node), bool (OnStackCleared)(LDA_Stack *stack));
 /*
     @brief Delete the stack
 
     This function implements LDA_StackClear to clear all the nodes, and the free function to delete the Stack itself.
 
     @param stack Pointer to a pointer where the stack to be deleted (by free(stack)) is stored.
-    @param OnNodeCleaned Callback function. This function is passed to LDA_StackClear.
-    @param OnStackCleaned Callback function. This function is passed to LDA_StackClear. This is the last callback function called. Use this to free memory before the lambda library release the memory of the stack.
+    @param OnNodeCleared Callback function. This function is passed to LDA_StackClear.
+    @param OnStackCleared Callback function. This function is passed to LDA_StackClear. This is the last callback function called. Use this to free memory before the lambda library release the memory of the stack.
 
     @retval LDA_StackSuccess if all went as planned.
     @retval (Other code) this error is the return code returned by LDA_StackClear function.
 */
-LDA_StackCode LDA_StackDelete(LDA_Stack **stack, bool (*OnNodeCleaned)(LDA_StackNode *node), bool (OnStackCleaned)(LDA_Stack *stack));
+LDA_StackCode LDA_StackDelete(LDA_Stack **stack, bool (*OnNodeCleared)(LDA_StackNode *node), bool (OnStackCleared)(LDA_Stack *stack));
 
 #endif /* LDA_C_DATASTRUCTURES_STACK_INCLUDED */

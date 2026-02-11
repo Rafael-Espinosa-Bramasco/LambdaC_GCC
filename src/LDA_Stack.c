@@ -64,7 +64,7 @@ LDA_StackCode LDA_StackPush(LDA_StackNode *node, LDA_Stack *stack, bool (*OnStac
             return LDA_OnStackPushFailed;
         }
     }
-    if(LDA_StackIsEmpty(stack))
+    if(stack->_stacktop == NULL)
     {
         stack->_stacktop = node;
     }else
@@ -92,7 +92,7 @@ LDA_StackCode LDA_StackPop(LDA_Stack *stack, LDA_StackNode **stackNodePopped, bo
             return LDA_OnStackPopFailed;
         }
     }
-    if(!LDA_StackIsEmpty(stack))
+    if(!stack->_stacktop == NULL)
     {
         stack->_stacktop = auxnode->_nextnode;
         auxnode->_nextnode = NULL;
@@ -121,39 +121,42 @@ bool LDA_StackIsEmpty(LDA_Stack *stack)
     }
     return stack->_stacktop == NULL;
 }
-LDA_StackCode LDA_StackClear(LDA_Stack *stack, bool (*OnNodeCleaned)(LDA_StackNode *node), bool (OnStackCleaned)(LDA_Stack *stack))
+LDA_StackCode LDA_StackClear(LDA_Stack *stack, bool (*OnNodeCleared)(LDA_StackNode *node), bool (OnStackCleared)(LDA_Stack *stack))
 {
     if(!stack)
     {
         return LDA_StackIsNull;
     }
     LDA_StackNode *aux;
+    LDA_StackCode popResult;
     while(stack->_stacktop != NULL)
     {
-        aux = stack->_stacktop;
-        stack->_stacktop = aux->_nextnode;
-        aux->_nextnode = NULL;
-        if(OnNodeCleaned)
+        popResult  = LDA_StackPop(stack,&aux,NULL);
+        if(popResult != LDA_StackSuccess)
+        {
+            return popResult;
+        }
+        if(OnNodeCleared)
         {
             if(!OnNodeCleaned(aux))
             {
-                return LDA_OnNodeCleanedFailed;
+                return LDA_OnNodeClearedFailed;
             }
         }
         free(aux);
     }
-    if(OnStackCleaned)
+    if(OnStackCleared)
     {
         if(!OnStackCleaned(stack))
         {
-            return LDA_OnStackCleanedFailed;
+            return LDA_OnStackClearedFailed;
         }
     }
     return LDA_StackSuccess;
 }
-LDA_StackCode LDA_StackDelete(LDA_Stack **stack, bool (*OnNodeCleaned)(LDA_StackNode *node), bool (OnStackCleaned)(LDA_Stack *stack))
+LDA_StackCode LDA_StackDelete(LDA_Stack **stack, bool (*OnNodeCleared)(LDA_StackNode *node), bool (OnStackCleared)(LDA_Stack *stack))
 {
-    LDA_StackCode clearResult = LDA_StackClear(*stack, OnNodeCleaned,OnStackCleaned);
+    LDA_StackCode clearResult = LDA_StackClear(*stack, OnNodeCleared,OnStackCleared);
     if(clearResult != LDA_StackSuccess)
     {
         return clearResult;
