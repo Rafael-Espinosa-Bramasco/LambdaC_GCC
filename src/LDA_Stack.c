@@ -140,7 +140,7 @@ LDA_StackCode LDA_StackClear(LDA_Stack *stack, bool (*OnNodeCleared)(LDA_StackNo
         {
             if(!OnNodeCleaned(aux))
             {
-                return LDA_OnNodeClearedFailed;
+                return LDA_OnStackNodeClearedFailed;
             }
         }
         free(aux);
