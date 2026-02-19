@@ -1,17 +1,15 @@
 #include <LDA/DataStructures/LDA_List.h>
 
-#include <stdlib.h>
-
-LDA_ListCodes LDA_CreateSLL(void *state, LDA_SLL **listResult, bool (*OnSLLCreated)(LDA_SLL *sll))
+LDA_ReturnCodes LDA_CreateSLL(void *state, LDA_SLL **listResult, bool (*OnSLLCreated)(LDA_SLL *sll))
 {
     if(!listResult)
     {
-        return LDA_ListResultIsNull;
+        return LDA_MainStructureParameterResultIsNULL;
     }
     LDA_SLL *newsll = malloc(sizeof(LDA_SLL));
     if(!newsll)
     {
-        return LDA_ListNotCreated;
+        return LDA_ItemNotCreated;
     }
     newsll->_sllstate = state;
     newsll->_firstNode = NULL;
@@ -20,22 +18,22 @@ LDA_ListCodes LDA_CreateSLL(void *state, LDA_SLL **listResult, bool (*OnSLLCreat
     {
         if(!OnSLLCreated(newsll))
         {
-            return LDA_OnSLLCreatedFailed;
+            return LDA_PostActionCallbackFunctionFailed;
         }
     }
     *listResult = newsll;
-    return LDA_ListSuccess;
+    return LDA_Success;
 }
-LDA_ListCodes LDA_CreateSLLNode(void *state, void *data, LDA_SLLNode **nodeResult, bool (*OnSLLNodeCreated)(LDA_SLLNode *node))
+LDA_ReturnCodes LDA_CreateSLLNode(void *state, void *data, LDA_SLLNode **nodeResult, bool (*OnSLLNodeCreated)(LDA_SLLNode *node))
 {
     if(!nodeResult)
     {
-        return LDA_ListNodeResultIsNull;
+        return LDA_NodeStructureParameterResultIsNULL;
     }
     LDA_SLLNode *newsllnode = malloc(sizeof(LDA_SLLNode));
     if(!newsllnode)
     {
-        return LDA_ListNodeNotCreated;
+        return LDA_ItemNotCreated;
     }
     newsllnode->_nodeState = state;
     newsllnode->_nodeData = data;
@@ -44,9 +42,13 @@ LDA_ListCodes LDA_CreateSLLNode(void *state, void *data, LDA_SLLNode **nodeResul
     {
         if(!OnSLLNodeCreated(newsllnode))
         {
-            return LDA_OnSLLNodeCreatedFailed;
+            return LDA_PostActionCallbackFunctionFailed;
         }
     }
     *nodeResult = newsllnode;
-    return LDA_ListSuccess;
+    return LDA_Success;
+}
+LDA_ReturnCodes LDA_SLLAddAtStart(LDA_SLLNode *node, LDA_SLL *list)
+{
+    return LDA_Success;
 }
