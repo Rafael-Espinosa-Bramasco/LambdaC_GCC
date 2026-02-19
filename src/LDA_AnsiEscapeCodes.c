@@ -43,7 +43,7 @@ void LDA_AnsiClearLine(LDA_AnsiClearOptions option)
     printf("\033[%iK",option);
     if(option == LDA_AnsiClearEntireAndRestart)
     {
-        LDA_CursorToColumn(1);
+        LDA_AnsiCursorToColumn(1);
     }
 }
 void LDA_AnsiScrollUp(unsigned int lines)
